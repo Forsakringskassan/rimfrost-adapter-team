@@ -79,7 +79,8 @@ public class TeamAdapterTest
       server.stubFor(WireMock.get(WireMock.urlPathEqualTo("/team/1/individer"))
             .willReturn(WireMock.aResponse().withStatus(200)
                   .withHeader("Content-Type", "application/json")
-                  .withBody("{\"individer\":[{\"typId\":\"4c34906c-03d9-425f-9a1a-062ef6eb88c7\",\"varde\":\"197001011234\"}]}")));
+                  .withBody(
+                        "{\"individer\":[{\"typId\":\"4c34906c-03d9-425f-9a1a-062ef6eb88c7\",\"varde\":\"197001011234\"}]}")));
 
       var response = teamAdapter.getTeamIndivider(1);
 
