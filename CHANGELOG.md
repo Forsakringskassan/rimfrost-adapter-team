@@ -2,6 +2,18 @@
 
 Changelog of rimfrost-adapter-team.
 
+## 0.0.2 (2026-10-28)
+
+### Bug Fixes
+
+-  simplify workflows and bump openapi spec to 0.1.3 ([c0fde](https://github.com/Forsakringskassan/rimfrost-adapter-team/commit/c0fdee4ed8403f4) Ulf Slunga)  
+-  remove hasSidPermission, bump spec to 0.1.2, add TeamException ([5d228](https://github.com/Forsakringskassan/rimfrost-adapter-team/commit/5d228d15ced950e) Ulf Slunga)  
+
+### Dependency updates
+
+- add renovate.json ([25d14](https://github.com/Forsakringskassan/rimfrost-adapter-team/commit/25d1430542b5ec8) renovate[bot])  
+## rimfrost-1_2 (2026-09-02)
+
 ## 0.0.1 (2026-09-02)
 
 ### Bug Fixes
