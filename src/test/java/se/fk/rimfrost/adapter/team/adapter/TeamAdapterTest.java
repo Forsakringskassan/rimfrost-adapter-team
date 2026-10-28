@@ -4,10 +4,10 @@ import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import io.quarkus.test.component.QuarkusComponentTest;
 import jakarta.inject.Inject;
-import jakarta.ws.rs.NotFoundException;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.util.UUID;
@@ -49,7 +49,8 @@ public class TeamAdapterTest
    }
 
    @Test
-   void testGetIndividTeam()
+   @DisplayName("TEAM-FR-01.1: getIndividTeam returns team list when service responds with 200")
+   void testGetIndividTeam() throws TeamException
    {
       server.stubFor(WireMock.get(WireMock.urlPathEqualTo("/individ/PERSONNUMMER/197001011234/team"))
             .willReturn(WireMock.aResponse().withStatus(200)
@@ -65,16 +66,52 @@ public class TeamAdapterTest
    }
 
    @Test
+   @DisplayName("TEAM-FR-03.1: getIndividTeam throws TeamException with NOT_FOUND when service responds with 404")
    void testGetIndividTeamThrowsNotFound()
    {
       server.stubFor(WireMock.get(WireMock.urlPathEqualTo("/individ/PERSONNUMMER/unknown/team"))
             .willReturn(WireMock.aResponse().withStatus(404)));
 
-      assertThrows(NotFoundException.class, () -> teamAdapter.getIndividTeam("PERSONNUMMER", "unknown"));
+      var ex = assertThrows(TeamException.class, () -> teamAdapter.getIndividTeam("PERSONNUMMER", "unknown"));
+      assertEquals(TeamException.ErrorType.NOT_FOUND, ex.getErrorType());
    }
 
    @Test
-   void testGetTeamIndivider()
+   @DisplayName("TEAM-FR-03.2: getIndividTeam throws TeamException with BAD_REQUEST when service responds with 400")
+   void testGetIndividTeamThrowsBadRequest()
+   {
+      server.stubFor(WireMock.get(WireMock.urlPathEqualTo("/individ/OGILTIG/123/team"))
+            .willReturn(WireMock.aResponse().withStatus(400)));
+
+      var ex = assertThrows(TeamException.class, () -> teamAdapter.getIndividTeam("OGILTIG", "123"));
+      assertEquals(TeamException.ErrorType.BAD_REQUEST, ex.getErrorType());
+   }
+
+   @Test
+   @DisplayName("TEAM-FR-03.3: getIndividTeam throws TeamException with SERVICE_UNAVAILABLE when service responds with 503")
+   void testGetIndividTeamThrowsServiceUnavailable()
+   {
+      server.stubFor(WireMock.get(WireMock.urlPathEqualTo("/individ/PERSONNUMMER/197001011234/team"))
+            .willReturn(WireMock.aResponse().withStatus(503)));
+
+      var ex = assertThrows(TeamException.class, () -> teamAdapter.getIndividTeam("PERSONNUMMER", "197001011234"));
+      assertEquals(TeamException.ErrorType.SERVICE_UNAVAILABLE, ex.getErrorType());
+   }
+
+   @Test
+   @DisplayName("TEAM-FR-03.4: getIndividTeam throws TeamException with UNEXPECTED_ERROR when service responds with 500")
+   void testGetIndividTeamThrowsUnexpectedError()
+   {
+      server.stubFor(WireMock.get(WireMock.urlPathEqualTo("/individ/PERSONNUMMER/197001011234/team"))
+            .willReturn(WireMock.aResponse().withStatus(500)));
+
+      var ex = assertThrows(TeamException.class, () -> teamAdapter.getIndividTeam("PERSONNUMMER", "197001011234"));
+      assertEquals(TeamException.ErrorType.UNEXPECTED_ERROR, ex.getErrorType());
+   }
+
+   @Test
+   @DisplayName("TEAM-FR-02.1: getTeamIndivider returns member list when service responds with 200")
+   void testGetTeamIndivider() throws TeamException
    {
       server.stubFor(WireMock.get(WireMock.urlPathEqualTo("/team/1/individer"))
             .willReturn(WireMock.aResponse().withStatus(200)
@@ -90,33 +127,47 @@ public class TeamAdapterTest
    }
 
    @Test
+   @DisplayName("TEAM-FR-03.1: getTeamIndivider throws TeamException with NOT_FOUND when service responds with 404")
    void testGetTeamIndividerThrowsNotFound()
    {
       server.stubFor(WireMock.get(WireMock.urlPathEqualTo("/team/999/individer"))
             .willReturn(WireMock.aResponse().withStatus(404)));
 
-      assertThrows(NotFoundException.class, () -> teamAdapter.getTeamIndivider(999));
+      var ex = assertThrows(TeamException.class, () -> teamAdapter.getTeamIndivider(999));
+      assertEquals(TeamException.ErrorType.NOT_FOUND, ex.getErrorType());
    }
 
    @Test
-   void testHasSidPermission()
+   @DisplayName("TEAM-FR-03.2: getTeamIndivider throws TeamException with BAD_REQUEST when service responds with 400")
+   void testGetTeamIndividerThrowsBadRequest()
    {
-      server.stubFor(WireMock.get(WireMock.urlPathEqualTo("/individ/PERSONNUMMER/197001011234/hasSidPermission"))
-            .willReturn(WireMock.aResponse().withStatus(200)
-                  .withHeader("Content-Type", "application/json")
-                  .withBody("true")));
+      server.stubFor(WireMock.get(WireMock.urlPathEqualTo("/team/-1/individer"))
+            .willReturn(WireMock.aResponse().withStatus(400)));
 
-      var response = teamAdapter.hasSidPermission("PERSONNUMMER", "197001011234");
-
-      assertEquals(Boolean.TRUE, response);
+      var ex = assertThrows(TeamException.class, () -> teamAdapter.getTeamIndivider(-1));
+      assertEquals(TeamException.ErrorType.BAD_REQUEST, ex.getErrorType());
    }
 
    @Test
-   void testHasSidPermissionThrowsNotFound()
+   @DisplayName("TEAM-FR-03.3: getTeamIndivider throws TeamException with SERVICE_UNAVAILABLE when service responds with 503")
+   void testGetTeamIndividerThrowsServiceUnavailable()
    {
-      server.stubFor(WireMock.get(WireMock.urlPathEqualTo("/individ/PERSONNUMMER/unknown/hasSidPermission"))
-            .willReturn(WireMock.aResponse().withStatus(404)));
+      server.stubFor(WireMock.get(WireMock.urlPathEqualTo("/team/1/individer"))
+            .willReturn(WireMock.aResponse().withStatus(503)));
 
-      assertThrows(NotFoundException.class, () -> teamAdapter.hasSidPermission("PERSONNUMMER", "unknown"));
+      var ex = assertThrows(TeamException.class, () -> teamAdapter.getTeamIndivider(1));
+      assertEquals(TeamException.ErrorType.SERVICE_UNAVAILABLE, ex.getErrorType());
    }
+
+   @Test
+   @DisplayName("TEAM-FR-03.4: getTeamIndivider throws TeamException with UNEXPECTED_ERROR when service responds with 500")
+   void testGetTeamIndividerThrowsUnexpectedError()
+   {
+      server.stubFor(WireMock.get(WireMock.urlPathEqualTo("/team/1/individer"))
+            .willReturn(WireMock.aResponse().withStatus(500)));
+
+      var ex = assertThrows(TeamException.class, () -> teamAdapter.getTeamIndivider(1));
+      assertEquals(TeamException.ErrorType.UNEXPECTED_ERROR, ex.getErrorType());
+   }
+
 }
