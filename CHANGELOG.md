@@ -2,6 +2,12 @@
 
 Changelog of rimfrost-adapter-team.
 
+## 0.0.3 (2026-10-29)
+
+### Bug Fixes
+
+-  Bump release version ([e8063](https://github.com/Forsakringskassan/rimfrost-adapter-team/commit/e8063e3004a5887) Lars Persson)  
+
 ## 0.0.2 (2026-10-28)
 
 ### Bug Fixes
