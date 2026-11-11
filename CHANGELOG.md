@@ -2,6 +2,16 @@
 
 Changelog of rimfrost-adapter-team.
 
+## 0.0.4 (2026-11-11)
+
+### Bug Fixes
+
+-  Add support for ignoring unknown json properties ([42c47](https://github.com/Forsakringskassan/rimfrost-adapter-team/commit/42c4749744d4ab1) Lars Persson)  
+
+### Dependency updates
+
+- update forsakringskassan/.github digest to cbc0db8 ([8249c](https://github.com/Forsakringskassan/rimfrost-adapter-team/commit/8249c0ed837969e) renovate[bot])  
+- update dependency org.apache.maven.plugins:maven-compiler-plugin to v3.16.0 ([fc028](https://github.com/Forsakringskassan/rimfrost-adapter-team/commit/fc0285329627266) renovate[bot])  
 ## 0.0.3 (2026-10-29)
 
 ### Bug Fixes
