@@ -13,6 +13,7 @@ import org.junit.jupiter.api.Test;
 import java.util.UUID;
 
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -168,6 +169,19 @@ public class TeamAdapterTest
 
       var ex = assertThrows(TeamException.class, () -> teamAdapter.getTeamIndivider(1));
       assertEquals(TeamException.ErrorType.UNEXPECTED_ERROR, ex.getErrorType());
+   }
+
+   @Test
+   @DisplayName("TEAM-FR-04.1: getIndividTeam ignores unknown properties in service response")
+   void testGetIndividTeamIgnoresUnknownProperties() throws TeamException
+   {
+      server.stubFor(WireMock.get(WireMock.urlPathEqualTo("/individ/PERSONNUMMER/197001011234/team"))
+            .willReturn(WireMock.aResponse().withStatus(200)
+                  .withHeader("Content-Type", "application/json")
+                  .withBody(
+                        "{\"team\":[{\"id\":1,\"namn\":\"Team A\",\"kontor\":\"Stockholm\"}],\"unknown-property\":\"some-value\"}")));
+
+      assertDoesNotThrow(() -> teamAdapter.getIndividTeam("PERSONNUMMER", "197001011234"));
    }
 
 }

@@ -23,3 +23,7 @@ som ett typat Java-API för konsumenter inom Rimfrost.
 - **TEAM-FR-03.2** Om tjänsten svarar med HTTP 400 ska adaptern kasta ett `TeamException` med `ErrorType.BAD_REQUEST`.
 - **TEAM-FR-03.3** Om tjänsten svarar med HTTP 503 ska adaptern kasta ett `TeamException` med `ErrorType.SERVICE_UNAVAILABLE`.
 - **TEAM-FR-03.4** Vid övriga HTTP-fel eller kommunikationsfel ska adaptern kasta ett `TeamException` med `ErrorType.UNEXPECTED_ERROR`.
+
+### TEAM-FR-04 — Okända attribut i svar
+
+- **TEAM-FR-04.1** Adaptern ska ignorera eventuella okända attribut som inkluderas med svar från tjänsten.
